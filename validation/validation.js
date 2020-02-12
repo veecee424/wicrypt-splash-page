@@ -5,7 +5,7 @@ const { check, validationResult } = require('express-validator');
 function validateInput (req, res, next) {
     
         check("email", "provide user email").notEmpty().trim().isEmail().withMessage('Invalid email');
-        check("referrer", "invalid referrer code").isNumeric().notEmpty().trim();
+        check("referral", "invalid referrer code").isNumeric().notEmpty().withMessage("cannot be empty").trim();
         check("username", "username can't be empty").notEmpty().trim();
     
         const errors = validationResult(req)

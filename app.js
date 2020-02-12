@@ -13,6 +13,10 @@ const routes = require("./routes/route");
 const cors = require("cors");
 app.use(cors());
 
+// Use ejs
+// const ejs = require("ejs")
+app.set('view engine', 'ejs');
+
 //Use and connect mongodb
 const mongoose = require("mongoose");
 mongoose.connect("mongodb://localhost:27017/wicrypt", {useNewUrlParser: true, useUnifiedTopology: true});
@@ -21,6 +25,48 @@ db.on("error", console.error.bind(console, "connection error"));
 db.once("open", function() {
     console.log("connection success");
 });
+
+
+// Create a merchant
+let merchant = require("./models/merchant");
+
+
+
+
+const createMerchant = () => {
+    let merchantObj = {
+        name: "merchant3",
+        merchant_id: "wicrypt_003",
+     
+         logo: "http://itedgenews.ng/wp-content/uploads/2018/09/MTN.jpg",
+     
+         banner: "http://itedgenews.ng/wp-content/uploads/2018/09/MTN.jpg",
+     
+         special_request: true,
+     
+         promo_limit: 5, //In hours
+
+         html_page: "<p>paragraph tag on fleek</p>"
+    }
+    try {
+
+        merchant.create(merchantObj, (err, createdMerchant) => {
+            if (err) {
+                throw "Unable to create merchant"
+            } else {
+                console.log(createdMerchant)
+            }
+        })
+    }
+
+    catch (error) {
+        console.log(err);
+    }
+    
+}
+
+// createMerchant();
+
 
 
 

@@ -1,7 +1,10 @@
 
 // Import mock data
 const merchants = require("../testdata/testdata");
-const user = require("../models/user")
+const user = require("../models/user");
+const timeCheck = require("../helpers/timecheck");
+
+
 
 
 
@@ -9,9 +12,9 @@ let controller = {
 
     showSplashPage: (req, res) => {
 
-        let merchant = merchants.merchant1; // Consume/process merchant data received
+        let merchant = merchants.merchant1; // Consume/process merchant data received from wicrypt server to find out the merchant through which a user is logged in
         
-    
+
         // Checks if the merchant specified a unique page to be shown
         if (merchant && merchant.special_request == false) {
             res.render("index.ejs")
@@ -37,20 +40,28 @@ let controller = {
             email: req.body.email
         }
 
-        let currentUserId = req.body.userId;
+        let currentUserId = req.body.userId; //Consume information from wicrypt server to find get the current user id of the user who is logged in
+
         // query the database to know if the user exists
         let existingUser = await user.find({user_id: currentUserId});
 
         try {
 
             if(existingUser[0] === undefined) {
-                // create the user and push the referral code
+                // If the user doesn't exist in my database, create the user with information from the payload
                 user.create(userObj, (err, userInput) => {
+
                     if(err) {
+
                         throw "unable to create user"
+
                     } else {
-                        userInput.used_referrals.push(req.body.referral)
-                        userInput.save();
+                        // userInput.used_referrals.push(req.body.referral)
+                        // userInput.save();
+                    
+                       timeCheck(userInput, req)
+              
+                        
                     }
                 })
                 res.render("main.ejs")
@@ -59,16 +70,21 @@ let controller = {
                 
                 // if the user exists, just push in the referral code after checking that it hasn't been used
                 existingUser.forEach((activeUsers) => {
-                    // console.log(activeUsers.used_referrals, "actoive")
+
                     let existingReferral = activeUsers.used_referrals.indexOf(req.body.referral);
-                    // console.log(existingReferral)
+
                     if (existingReferral !== -1) {
-                        // console.log("existing")
+               
                         return res.redirect("/");
                     } else {
-                        // console.log("non existent")
-                        activeUsers.used_referrals.push(req.body.referral);
-                        activeUsers.save();
+                        
+                        //TIME CHECK HAPPENS HERE
+                        
+                        timeCheck(activeUsers, req)
+
+
+                        // activeUsers.used_referrals.push(req.body.referral);
+                        // activeUsers.save();
                        return res.render("main.ejs")
                     }
                 })
@@ -91,85 +107,9 @@ let controller = {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // checkUser: (req, res, next) => {
-    //     //If user exists already, don't do anything. Just push the referral code
-    //     let currentUserId = req.body.userId;
-
-    //     user.find({user_id: currentUserId}, (err, found) => {
-    //         if(err) {
-    //             console.log(err)
-    //         } else if(found !== []) {
-    //             found.forEach((item) => {
-    //             item.used_referrals.push(req.body.referral)
-    //             item.save();
-    //             })
-    //             res.render("main.ejs")
-    //         } else {
-    //             next();
-    //         }
-            
-    //     })
-    // },
-
-
-    // checkReferral: (req, res, next) => {
-    //     let currentUserId = req.body.userId;
-
-    //     user.find({user_id: currentUserId}, (err, currentUser) => {
-    //         if (err) {
-    //             console.log(err)
-    //         } else {
-                
-    //             currentUser.forEach((activeUsers) => {
-    //                 console.log(activeUsers.used_referrals)
-    //                 let existingReferral = activeUsers.used_referrals.indexOf(req.body.referral);
-    //                 if(existingReferral !== -1) {
-    //                     console.log("existing")
-    //                     res.redirect("/");
-    //                 } else {
-    //                     next();
-    //                 }
-            
-                    
-    //             //     activeUsers.used_referrals.forEach((referralUsed) => {
-                        
-    //             //         // if (referralUsed == req.body.referral) {
-    //             //         //     res.redirect("/")    
-    //             //         //     console.log("This referral has been used before");
-    //             //         // }
-    //             //         //  else {
-    //             //         //     next();
-    //             //         // } 
-    //             //     })
-    //             })
-    //         }
-    //     })
-    // }, 
-
-
-
-
 }
+
+
+
 
 module.exports = controller;
