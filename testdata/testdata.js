@@ -7,7 +7,7 @@ let merchants = {
         "logo": "http://itedgenews.ng/wp-content/uploads/2018/09/MTN.jpg",
         "special_request": true,
         "html_page": "merchant1.ejs",
-        "limit": "8"
+        "limit": "5" //In hours
     },
 
     "merchant2": {

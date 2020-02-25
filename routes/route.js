@@ -22,7 +22,7 @@ router.post("/main", controller.clickToContinue)
 
 
 // Handle user input from merchant1 users
-router.post("/", controller.handleQuestionnaireInput)
+router.post("/",validateInput ,controller.handleQuestionnaireInput)
 
 
 module.exports = router;

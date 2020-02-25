@@ -20,6 +20,7 @@ let controller = {
             res.render("index.ejs")
         }
             res.render(`${merchant.html_page}`, {merchant: merchant});
+            return merchant.name;
     },
 
     
@@ -35,12 +36,16 @@ let controller = {
 
     handleQuestionnaireInput: async (req, res) => {
 
+        let currentUserId = req.body.userId; //Consume information from wicrypt server to find get the current user id of the user who is logged in
+        let merchant = merchants.merchant1; // Consume/process merchant data received from wicrypt server to find out the merchant through which a us
+
         let userObj = {
             user_id: req.body.userId,
-            email: req.body.email
+            email: req.body.email,
+            merchant_id: merchant.name
         }
 
-        let currentUserId = req.body.userId; //Consume information from wicrypt server to find get the current user id of the user who is logged in
+        
 
         // query the database to know if the user exists
         let existingUser = await user.find({user_id: currentUserId});
@@ -56,10 +61,10 @@ let controller = {
                         throw "unable to create user"
 
                     } else {
-                        // userInput.used_referrals.push(req.body.referral)
-                        // userInput.save();
+                        
                     
-                       timeCheck(userInput, req)
+                     timeCheck(userInput, req)
+                       
               
                         
                     }
@@ -75,34 +80,27 @@ let controller = {
 
                     if (existingReferral !== -1) {
                
-                        return res.redirect("/");
+                        res.redirect("/");
+
                     } else {
                         
                         //TIME CHECK HAPPENS HERE
                         
-                        timeCheck(activeUsers, req)
+                      timeCheck(activeUsers, req)
 
 
-                        // activeUsers.used_referrals.push(req.body.referral);
-                        // activeUsers.save();
-                       return res.render("main.ejs")
+                        res.render("main.ejs")
                     }
                 })
             }
         } catch (e) {
-            console.log(e, "caught error")
+            console.log(e, "Sorry, an error occured")
         }
-
-
-
-
-
-
-
 
 
            
     },
+
 
 
 
